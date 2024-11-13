@@ -38,9 +38,9 @@ func obtenir_touche_assignée():
 
 func jouer_animation():
 	var tween = create_tween()
-	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.1)
-	tween.tween_property(self, "scale", Vector2(0, 0), 0.1)
-	tween.tween_property($KeyLabel, "modulate:a", 0.0, 0.1)
+	tween.tween_property(self, "scale", Vector2(1.16, 1.16), 0.08)
+	tween.tween_property(self, "scale", Vector2(0, 0), 0.08)
+	tween.tween_property($KeyLabel, "modulate:a", 0, 0.08)
 	tween.tween_callback(animation_terminee)
 
 func animation_terminee():
