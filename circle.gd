@@ -32,7 +32,7 @@ func _on_mouse_exited():
 
 func est_souris_dessus():
 	return souris_dessus
-
+						
 func obtenir_touche_assignée():
 	return touche_assignée
 

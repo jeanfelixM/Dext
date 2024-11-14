@@ -1,11 +1,29 @@
-[gd_scene load_steps=4 format=3 uid="uid://dtm7fwy4yiox7"]
+[gd_scene load_steps=6 format=3 uid="uid://dtm7fwy4yiox7"]
 
 [ext_resource type="Script" path="res://gamescene.gd" id="1_mxx6g"]
 [ext_resource type="AudioStream" uid="uid://domfpt8h6nrdi" path="res://miaw miaw miaw song sad (lyrics video visual).wav" id="2_8wg1u"]
 [ext_resource type="PackedScene" uid="uid://dtx75dqoxfqd8" path="res://pause_menu_layer.tscn" id="3_1em7v"]
 
+[sub_resource type="Gradient" id="Gradient_rk1t7"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.172619, 1)
+colors = PackedColorArray(0.413784, 0.760641, 0.662593, 1, 0.42056, 0.778301, 0.951745, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_xjc46"]
+gradient = SubResource("Gradient_rk1t7")
+
 [node name="GameScene" type="Node2D"]
 script = ExtResource("1_mxx6g")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture1D_xjc46")
 
 [node name="LabelScore" type="Label" parent="."]
 offset_left = 10.0
