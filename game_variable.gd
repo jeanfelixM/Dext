@@ -4,6 +4,8 @@ var key_list: Array = ['A','Z','E','R','F','Q']
 var duration = 30
 var game_mode = 'simple'
 var username = "pigeon"
+var mode = 0
+var rayon = 50
 const tuturu_sound = preload("res://tuturu.wav")
 
 
@@ -14,6 +16,7 @@ func _ready():
 		key_list = ['A','Z','E','R','F','Q']
 	load_duration()
 	load_user()
+	load_mode()
 
 func key_listappend(s):
 	key_list.append(s)
@@ -74,6 +77,28 @@ func save_user():
 		var content = JSON.stringify(username)
 		file.store_string(content)
 		file.close()
+		
+func load_mode():
+	var file = FileAccess.open("user://mode.json", FileAccess.ModeFlags.READ)
+	if file:
+		var content = file.get_as_text()
+		file.close()
+		mode = JSON.parse_string(content)
+	else:
+		mode = 0
+
+func save_mode():
+	var file = FileAccess.open("user://mode.json", FileAccess.ModeFlags.WRITE)
+	if file:
+		var content = JSON.stringify(mode)
+		file.store_string(content)
+		file.close()
+
+func modechange(idx):
+	print("mode")
+	print(idx)
+	mode = idx
+	save_mode()
 
 func usernamechange(str):
 	username = str

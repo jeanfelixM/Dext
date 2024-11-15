@@ -1,12 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://dtm7fwy4yiox7"]
+[gd_scene load_steps=6 format=3 uid="uid://dtm7fwy4yiox7"]
 
 [ext_resource type="Script" path="res://gamescene.gd" id="1_mxx6g"]
 [ext_resource type="AudioStream" uid="uid://domfpt8h6nrdi" path="res://miaw miaw miaw song sad (lyrics video visual).wav" id="2_8wg1u"]
 [ext_resource type="PackedScene" uid="uid://dtx75dqoxfqd8" path="res://pause_menu_layer.tscn" id="3_1em7v"]
-[ext_resource type="AudioStream" uid="uid://ddh5fpeu08430" path="res://ping_missing.wav" id="3_4klbr"]
-[ext_resource type="AudioStream" uid="uid://sxpi56b205om" path="res://flash.wav" id="4_bso5e"]
-[ext_resource type="Texture2D" uid="uid://qckq3ws5ptd2" path="res://flash.png" id="6_0yvgs"]
-[ext_resource type="Texture2D" uid="uid://bjkc5dat30pvb" path="res://missing.png" id="6_gtvf0"]
 
 [sub_resource type="Gradient" id="Gradient_rk1t7"]
 interpolation_mode = 2
@@ -52,31 +48,11 @@ volume_db = -24.07
 attenuation = 1e-05
 
 [node name="EndMusic" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("3_4klbr")
 
 [node name="PauseMenuLayer" parent="." instance=ExtResource("3_1em7v")]
 
 [node name="PauseMenu" parent="PauseMenuLayer" index="0"]
 visible = false
-
-[node name="FlashSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("4_bso5e")
-max_polyphony = 2
-
-[node name="MissingPing" type="TextureRect" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
-texture = ExtResource("6_gtvf0")
-
-[node name="FlashTexture" type="TextureRect" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("6_0yvgs")
-expand_mode = 2
-stretch_mode = 3
 
 [connection signal="pressed" from="PauseMenuLayer/PauseMenu/ButtonContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseMenuLayer/PauseMenu/ButtonContainer/SettingsButton" to="." method="_on_settings_button_pressed"]

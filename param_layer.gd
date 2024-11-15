@@ -4,6 +4,7 @@ extends CanvasLayer
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$ParamMenu/ButtonContainer/HBoxContainer/SpinBox.value = GameVariable.duration
+	$ParamMenu/ButtonContainer/HBoxContainer/OptionButton.select(GameVariable.mode)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -28,3 +29,11 @@ func _on_spin_box_value_changed(value):
 
 func _on_back_button_pressed():
 	get_tree().change_scene_to_file("res://main_menu.tscn")
+
+
+func _on_option_button_item_selected(index):
+	GameVariable.modechange(index)
+
+
+func _on_option_button_item_focused(index):
+	GameVariable.modechange(index)

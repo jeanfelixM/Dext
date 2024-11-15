@@ -66,15 +66,13 @@ text = "mode:"
 
 [node name="OptionButton" type="OptionButton" parent="ParamMenu/ButtonContainer/HBoxContainer"]
 layout_mode = 2
-item_count = 3
+item_count = 2
 selected = 0
 allow_reselect = true
 popup/item_0/text = "Simple"
 popup/item_0/id = 0
 popup/item_1/text = "Alternate"
 popup/item_1/id = 1
-popup/item_2/text = "No Flash!"
-popup/item_2/id = 2
 
 [node name="BackButton" parent="ParamMenu" instance=ExtResource("3_cd7ro")]
 layout_mode = 0
