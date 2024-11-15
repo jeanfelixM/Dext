@@ -26,19 +26,11 @@ func charger_scores():
 
 func _ready():
 	# Initialisation des touches possibles (A à Z)
-	for i in range(26):
-		touches_possibles.append('A')
-		touches_possibles.append('Z')
-		touches_possibles.append('E')
-		touches_possibles.append('R')
-		touches_possibles.append('Q')
-		touches_possibles.append('D')
-		touches_possibles.append('F')
-		touches_possibles.append('S')
+	touches_possibles = GameVariable.key_list
 		
 	# Démarrage du jeu
 	charger_scores()
-	demarrer_jeu(30)
+	demarrer_jeu(GameVariable.duration)
 
 func demarrer_jeu(duration):
 	$BackgroundMusic.play()
@@ -86,22 +78,28 @@ func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.is_action_pressed("ui_cancel"):
 			if get_tree().paused:
-				# Reprendre le jeu
 				get_tree().paused = false
 				hide_pause_menu()
 			else:
-				# Mettre en pause
 				get_tree().paused = true
 				show_pause_menu()
-			return  # Ne pas traiter d'autres entrées lors de la mise en pause/reprise
-	if jeu_en_cours and event is InputEventKey and event.pressed and not event.echo:
+			return 
+	
+	var keystroke = (event is InputEventKey and not event.echo and event.pressed)
+	var click = (event is InputEventMouseButton and event.pressed)
+	var right_input
+	if jeu_en_cours  and (keystroke || click):
 		totalpress += 1
-		var touche_presse = OS.get_keycode_string(event.keycode)
-		# Conversion en majuscule pour correspondre aux touches assignées
-		touche_presse = touche_presse.to_upper()
-		if cercle_actuel :
-			if cercle_actuel.est_souris_dessus():
-				if touche_presse == cercle_actuel.obtenir_touche_assignée():
+		if keystroke:
+			var touche_presse = OS.get_keycode_string(event.keycode)
+			touche_presse = touche_presse.to_upper()
+			right_input = (cercle_actuel.current_key() is String) and (str(touche_presse) == str(cercle_actuel.current_key()))
+		elif click:
+			right_input = (not cercle_actuel.current_key() is String) and event.button_index == cercle_actuel.current_key()
+		
+		if right_input:
+			if cercle_actuel :
+				if cercle_actuel.est_souris_dessus():
 					rightpress += 1
 					var reaction_time = Time.get_ticks_msec() - start_time
 					reaction_times.append(reaction_time)
@@ -109,8 +107,8 @@ func _input(event):
 					generer_nouveau_cercle()
 				else:
 					errors += 1
-			else:
-				errors += 1
+		else:
+			errors += 1
 		mettre_a_jour_score()
 
 func fin_du_jeu():
@@ -126,7 +124,7 @@ func fin_du_jeu():
 		average_reaction_time += time
 	average_reaction_time /= reaction_times.size()
 	
-	scores.append({"skill" :score/duree_tot ,"score": score, "time": duree_tot,"error" : errors})
+	scores.append({"skill" :score/duree_tot ,"score": score, "time": duree_tot,"error" : errors,"user":GameVariable.username})
 	scores.sort_custom(_compare_scores)
 	if scores.size() > 10:
 		scores = scores.slice(0, 10)
@@ -148,13 +146,13 @@ func fin_du_jeu():
 	spintime.position = replay_button.position + Vector2(0, 40)
 
 	$BackgroundMusic.stop()
-
+	TuturuPlayer.stop_tuturu()
 	add_child(spintime)
 	add_child(label_fin)
 	add_child(replay_button)
 
 func _compare_scores(a, b):
-	return b["score"] - a["score"]
+	return b["score"] < a["score"]
 
 func sauvegarder_scores():
 	var file = FileAccess.open("user://scores.json", FileAccess.ModeFlags.WRITE)
@@ -171,6 +169,7 @@ func _on_ReplayButton_pressed():
 	demarrer_jeu(duration)
 
 func show_pause_menu():
+	TuturuPlayer.stop_tuturu()
 	$PauseMenuLayer/PauseMenu.visible = true
 
 func hide_pause_menu():

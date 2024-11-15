@@ -14,3 +14,21 @@ config/name="Dext"
 run/main_scene="res://main_menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameVariable="*res://game_variable.gd"
+TuturuPlayer="*res://tuturu_player.tscn"
+
+[display]
+
+window/size/mode=2
+window/stretch/mode="canvas_items"
+
+[input]
+
+DKey={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194312,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
+}

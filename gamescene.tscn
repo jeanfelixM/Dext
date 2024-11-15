@@ -7,7 +7,7 @@
 [sub_resource type="Gradient" id="Gradient_rk1t7"]
 interpolation_mode = 2
 offsets = PackedFloat32Array(0.172619, 1)
-colors = PackedColorArray(0.413784, 0.760641, 0.662593, 1, 0.42056, 0.778301, 0.951745, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_xjc46"]
 gradient = SubResource("Gradient_rk1t7")
@@ -16,14 +16,15 @@ gradient = SubResource("Gradient_rk1t7")
 script = ExtResource("1_mxx6g")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-anchors_preset = -1
-anchor_right = 28.8
-anchor_bottom = 16.2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_right = 1152.0
-offset_bottom = 648.0
+offset_bottom = 649.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("GradientTexture1D_xjc46")
+expand_mode = 5
 
 [node name="LabelScore" type="Label" parent="."]
 offset_left = 10.0
@@ -44,6 +45,7 @@ text = "Temps: 30"
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("2_8wg1u")
 volume_db = -24.07
+attenuation = 1e-05
 
 [node name="EndMusic" type="AudioStreamPlayer2D" parent="."]
 

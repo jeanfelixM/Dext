@@ -1,14 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://46bjir5pnonb"]
 
 [ext_resource type="Script" path="res://param_layer.gd" id="1_p53sf"]
-
-[sub_resource type="Gradient" id="Gradient_jdcv3"]
-interpolation_mode = 2
-offsets = PackedFloat32Array(0.172619, 1)
-colors = PackedColorArray(0.413784, 0.760641, 0.662593, 1, 0.42056, 0.778301, 0.951745, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_425t1"]
-gradient = SubResource("Gradient_jdcv3")
+[ext_resource type="Texture2D" uid="uid://bow82ab2jpkv8" path="res://mayuri.jpg" id="2_dnmwg"]
+[ext_resource type="PackedScene" uid="uid://15amskxrb85y" path="res://back_button.tscn" id="3_cd7ro"]
 
 [node name="ParamLayer" type="CanvasLayer"]
 script = ExtResource("1_p53sf")
@@ -28,10 +22,11 @@ anchors_preset = -1
 anchor_right = 28.8
 anchor_bottom = 16.2
 offset_right = -32025.6
-offset_bottom = -9849.6
+offset_bottom = -9682.6
 grow_horizontal = 2
 grow_vertical = 2
-texture = SubResource("GradientTexture1D_425t1")
+texture = ExtResource("2_dnmwg")
+expand_mode = 5
 
 [node name="ButtonContainer" type="VBoxContainer" parent="ParamMenu"]
 layout_mode = 1
@@ -46,10 +41,6 @@ offset_right = -0.223999
 offset_bottom = 0.279984
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="ResumeButton" type="Button" parent="ParamMenu/ButtonContainer"]
-layout_mode = 2
-text = "Reprendre"
 
 [node name="KeysButton" type="Button" parent="ParamMenu/ButtonContainer"]
 layout_mode = 2
@@ -83,5 +74,12 @@ popup/item_0/id = 0
 popup/item_1/text = "Alternate"
 popup/item_1/id = 1
 
-[connection signal="pressed" from="ParamMenu/ButtonContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
+[node name="BackButton" parent="ParamMenu" instance=ExtResource("3_cd7ro")]
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 128.0
+offset_bottom = 128.0
+
 [connection signal="pressed" from="ParamMenu/ButtonContainer/KeysButton" to="." method="_on_keys_button_pressed"]
+[connection signal="value_changed" from="ParamMenu/ButtonContainer/HBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="pressed" from="ParamMenu/BackButton" to="." method="_on_back_button_pressed"]

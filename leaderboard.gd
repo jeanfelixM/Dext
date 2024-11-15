@@ -16,12 +16,26 @@ func charger_scores():
 		scores = []
 
 func afficher_scores():
-	var vbox = $VBoxContainer  # Assurez-vous que le chemin est correct
+	var vbox = $VBoxContainer  
 	for score_entry in scores:
-		var score_label = Label.new()
-		score_label.text = "Skill: %.2f, Score: %.2f, Error: %f, Time: %.2f" % [score_entry["skill"],score_entry["score"],score_entry["error"],score_entry["time"]]
-		vbox.add_child(score_label)
+		var panel = Panel.new()
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0, 0, 0, 0.5)  # Fond noir semi-transparent
+		panel.add_theme_stylebox_override("background", style)
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL  # Pour remplir la largeur
+		panel.custom_minimum_size = Vector2(450, 40)
 
-func _on_BackButton_pressed():
-	# Retourner au menu principal
-	get_tree().change_scene("res://MainMenu.tscn")
+		var score_label = Label.new()
+		score_label.text = "User: %s, Skill: %.2f, Score: %.2f, Error: %.f, Time: %.f" % [score_entry["user"],score_entry["skill"], score_entry["score"], score_entry["error"], score_entry["time"]]
+		score_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		score_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		panel.add_child(score_label)
+		vbox.add_child(panel)
+
+
+
+
+func _on_back_button_pressed():
+	get_tree().change_scene_to_file("res://main_menu.tscn")

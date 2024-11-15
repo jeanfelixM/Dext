@@ -2,7 +2,7 @@ extends Area2D
 
 signal animation_finie
 
-var touche_assignée = ""
+var assigned_key = ""
 var souris_dessus = false
 
 func _ready():
@@ -10,17 +10,22 @@ func _ready():
 	self.mouse_exited.connect(_on_mouse_exited)
 
 func new_circle(touches_possibles):
-	# Sélection d'une touche aléatoire
-	touche_assignée = touches_possibles[randi() % touches_possibles.size()]
-	# Mise à jour du label
-	$KeyLabel.text = touche_assignée
-	# Positionnement aléatoire du cercle
+	assigned_key = touches_possibles[randi() % touches_possibles.size()]
+	
+	if assigned_key is String:
+		$KeyLabel.text = assigned_key
+	else:
+		if assigned_key == 1:
+			$KeyLabel.text = "LC"
+		if assigned_key == 2:
+			$KeyLabel.text = "RC"
+
 	var viewport_size = get_viewport_rect().size
 	var rayon = ($CollisionShape2D.shape as CircleShape2D).radius
 	var position_x = randf_range(rayon, viewport_size.x - rayon)
 	var position_y = randf_range(rayon, viewport_size.y - rayon)
 	position = Vector2(position_x, position_y)
-	# Réinitialiser la scale et la transparence au cas où
+	
 	scale = Vector2(1, 1)
 	$KeyLabel.modulate.a = 1.0
 
@@ -33,8 +38,8 @@ func _on_mouse_exited():
 func est_souris_dessus():
 	return souris_dessus
 						
-func obtenir_touche_assignée():
-	return touche_assignée
+func current_key():
+	return assigned_key
 
 func jouer_animation():
 	var tween = create_tween()
