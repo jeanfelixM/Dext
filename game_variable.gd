@@ -6,7 +6,7 @@ var game_mode = 'simple'
 var username = "pigeon"
 var mode = 0
 var rayon = 50
-const tuturu_sound = preload("res://tuturu.wav")
+const tuturu_sound = preload("res://audio/tuturu.wav")
 
 
 # Called when the node enters the scene tree for the first time.

@@ -1,0 +1,96 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1dkhr8we7afh"]
+
+[ext_resource type="Script" path="res://keys_layer.gd" id="1_b3371"]
+[ext_resource type="Texture2D" uid="uid://bow82ab2jpkv8" path="res://images/mayuri.jpg" id="1_kf5q8"]
+[ext_resource type="PackedScene" uid="uid://15amskxrb85y" path="res://scenes/back_button.tscn" id="3_rc5pc"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_nfsts"]
+device = -1
+keycode = 4194312
+
+[sub_resource type="Shortcut" id="Shortcut_h2dis"]
+events = [SubResource("InputEventKey_nfsts")]
+
+[node name="KeysLayer" type="CanvasLayer"]
+script = ExtResource("1_b3371")
+
+[node name="KeysMenu" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="KeysMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_right = -32025.6
+offset_bottom = -9682.6
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_kf5q8")
+expand_mode = 5
+
+[node name="ItemList" type="ItemList" parent="KeysMenu"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 480.0
+offset_top = 64.0
+offset_right = 676.0
+offset_bottom = 144.0
+max_columns = 3
+
+[node name="ButtonContainer2" type="VBoxContainer" parent="KeysMenu"]
+layout_mode = 2
+offset_left = 480.0
+offset_top = 176.0
+offset_right = 676.0
+offset_bottom = 272.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="KeysMenu/ButtonContainer2"]
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="KeysMenu/ButtonContainer2/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Ajouter"
+
+[node name="DeleteButton" type="Button" parent="KeysMenu/ButtonContainer2/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+shortcut = SubResource("Shortcut_h2dis")
+text = "Supprimer"
+
+[node name="AddingMenu" type="ColorRect" parent="KeysMenu"]
+visible = false
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 815.0
+color = Color(0, 0, 0, 0.756863)
+
+[node name="Label" type="Label" parent="KeysMenu/AddingMenu"]
+layout_mode = 0
+offset_left = 480.0
+offset_top = 336.0
+offset_right = 712.0
+offset_bottom = 391.0
+text = "Appuie sur une touche"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" parent="KeysMenu" instance=ExtResource("3_rc5pc")]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 128.0
+offset_bottom = 128.0
+
+[connection signal="pressed" from="KeysMenu/ButtonContainer2/ButtonContainer/AddButton" to="." method="_on_add_button_pressed"]
+[connection signal="pressed" from="KeysMenu/ButtonContainer2/ButtonContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="KeysMenu/BackButton" to="." method="_on_back_button_pressed"]

@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Dext"
-run/main_scene="res://main_menu.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://images/icon.svg"
 
 [autoload]
 
 GameVariable="*res://game_variable.gd"
-TuturuPlayer="*res://tuturu_player.tscn"
+TuturuPlayer="*res://scenes/tuturu_player.tscn"
 
 [display]
 

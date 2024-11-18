@@ -1,0 +1,90 @@
+[gd_scene load_steps=4 format=3 uid="uid://46bjir5pnonb"]
+
+[ext_resource type="Script" path="res://param_layer.gd" id="1_p53sf"]
+[ext_resource type="Texture2D" uid="uid://bow82ab2jpkv8" path="res://images/mayuri.jpg" id="2_dnmwg"]
+[ext_resource type="PackedScene" uid="uid://15amskxrb85y" path="res://scenes/back_button.tscn" id="3_cd7ro"]
+
+[node name="ParamLayer" type="CanvasLayer"]
+script = ExtResource("1_p53sf")
+
+[node name="ParamMenu" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="ParamMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_right = -32025.6
+offset_bottom = -9682.6
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_dnmwg")
+expand_mode = 5
+
+[node name="ButtonContainer" type="VBoxContainer" parent="ParamMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.413
+anchor_top = 0.269
+anchor_right = 0.587
+anchor_bottom = 0.39
+offset_left = 0.223969
+offset_top = -0.312012
+offset_right = -0.223999
+offset_bottom = 0.279984
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="KeysButton" type="Button" parent="ParamMenu/ButtonContainer"]
+layout_mode = 2
+text = "Touches"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ParamMenu/ButtonContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="ParamMenu/ButtonContainer/HBoxContainer"]
+layout_mode = 2
+text = "durée:"
+
+[node name="SpinBox" type="SpinBox" parent="ParamMenu/ButtonContainer/HBoxContainer"]
+layout_mode = 2
+min_value = 15.0
+max_value = 120.0
+value = 30.0
+custom_arrow_step = 1.0
+
+[node name="Label" type="Label" parent="ParamMenu/ButtonContainer/HBoxContainer"]
+layout_mode = 2
+text = "mode:"
+
+[node name="OptionButton" type="OptionButton" parent="ParamMenu/ButtonContainer/HBoxContainer"]
+layout_mode = 2
+item_count = 3
+selected = 0
+allow_reselect = true
+popup/item_0/text = "Simple"
+popup/item_0/id = 0
+popup/item_1/text = "Alternate"
+popup/item_1/id = 1
+popup/item_2/text = "No Flash!"
+popup/item_2/id = 2
+
+[node name="BackButton" parent="ParamMenu" instance=ExtResource("3_cd7ro")]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 128.0
+offset_bottom = 128.0
+
+[connection signal="pressed" from="ParamMenu/ButtonContainer/KeysButton" to="." method="_on_keys_button_pressed"]
+[connection signal="value_changed" from="ParamMenu/ButtonContainer/HBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="item_focused" from="ParamMenu/ButtonContainer/HBoxContainer/OptionButton" to="." method="_on_option_button_item_focused"]
+[connection signal="item_selected" from="ParamMenu/ButtonContainer/HBoxContainer/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="pressed" from="ParamMenu/BackButton" to="." method="_on_back_button_pressed"]

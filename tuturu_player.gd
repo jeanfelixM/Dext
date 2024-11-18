@@ -1,6 +1,6 @@
 extends AudioStreamPlayer
 
-const tuturu_sound = preload("res://tuturu.wav")
+const tuturu_sound = preload("res://audio/tuturu.wav")
 
 func _play_music(music: AudioStream, volume = -20.0):
 	stream = music
