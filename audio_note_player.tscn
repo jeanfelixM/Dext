@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://idtrrekydecf"]
+
+[ext_resource type="Script" path="res://AudioNotePlayer.cs" id="1_43kse"]
+
+[node name="AudioNotePlayer" type="Node"]
+script = ExtResource("1_43kse")

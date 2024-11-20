@@ -1,0 +1,21 @@
+{
+	"id" : 1,
+	"name" : "new short",
+	"rayon": 80,
+	"mode": 3,
+	"duration": 5,
+	"keys": [
+		"A",
+		"Z",
+		"E",
+		"R",
+		"F",
+		"Q"],
+	"notes": [
+		[
+			"B3",
+			"B3",
+			"G2"
+		]	
+	]
+}

@@ -1,0 +1,110 @@
+[gd_scene load_steps=5 format=3 uid="uid://tvatja6cgjhx"]
+
+[ext_resource type="Texture2D" uid="uid://cut2vx48a8ebb" path="res://images/mayuri.jpg" id="1_l5cc5"]
+[ext_resource type="Script" path="res://scenes/end_screen.gd" id="1_wc84h"]
+[ext_resource type="Texture2D" uid="uid://cjtpggsyk5744" path="res://images/yellow_star.png" id="3_q35gl"]
+[ext_resource type="Texture2D" uid="uid://dy7eucne63qeb" path="res://images/grey_star.png" id="4_xq5pj"]
+
+[node name="Control" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_wc84h")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_left = 352.0
+offset_top = 64.0
+offset_right = -360.0
+offset_bottom = -96.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_l5cc5")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="LabelFin" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_left = 480.0
+offset_top = 248.0
+offset_right = -408.0
+offset_bottom = -320.0
+text = "C FINI FINI"
+vertical_alignment = 1
+
+[node name="ReplayButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_left = 568.0
+offset_top = 392.0
+offset_right = -514.0
+offset_bottom = -200.0
+text = "Rejouer"
+
+[node name="SpinTime" type="SpinBox" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_left = 480.0
+offset_top = 392.0
+offset_right = -588.938
+offset_bottom = -200.0
+min_value = 15.0
+max_value = 120.0
+value = 30.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.8
+anchor_bottom = 16.2
+offset_left = 480.0
+offset_top = 136.0
+offset_right = -364.0
+offset_bottom = -412.0
+mouse_filter = 2
+
+[node name="Star1" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+disabled = true
+texture_normal = ExtResource("3_q35gl")
+texture_disabled = ExtResource("4_xq5pj")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Star2" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
+disabled = true
+texture_normal = ExtResource("3_q35gl")
+texture_disabled = ExtResource("4_xq5pj")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Star3" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
+disabled = true
+texture_normal = ExtResource("3_q35gl")
+texture_disabled = ExtResource("4_xq5pj")
+ignore_texture_size = true
+stretch_mode = 5

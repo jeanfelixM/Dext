@@ -59,7 +59,7 @@ func update_clicks_list(idx):
 		$KeysMenu/ItemList.add_item(str)
 
 func _on_back_button_pressed():
-	get_tree().change_scene_to_file("res://param_layer.tscn")
+	get_tree().change_scene_to_file("res://scenes/param_layer.tscn")
 
 
 func _on_add_button_pressed():

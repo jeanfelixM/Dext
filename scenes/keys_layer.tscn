@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://c1dkhr8we7afh"]
 
-[ext_resource type="Script" path="res://keys_layer.gd" id="1_b3371"]
-[ext_resource type="Texture2D" uid="uid://bow82ab2jpkv8" path="res://images/mayuri.jpg" id="1_kf5q8"]
-[ext_resource type="PackedScene" uid="uid://15amskxrb85y" path="res://scenes/back_button.tscn" id="3_rc5pc"]
+[ext_resource type="Script" path="res://keys_layer.gd" id="1_3yx1f"]
+[ext_resource type="Texture2D" uid="uid://cut2vx48a8ebb" path="res://images/mayuri.jpg" id="2_bya1w"]
+[ext_resource type="PackedScene" uid="uid://15amskxrb85y" path="res://scenes/back_button.tscn" id="3_1iop8"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_nfsts"]
 device = -1
@@ -12,7 +12,7 @@ keycode = 4194312
 events = [SubResource("InputEventKey_nfsts")]
 
 [node name="KeysLayer" type="CanvasLayer"]
-script = ExtResource("1_b3371")
+script = ExtResource("1_3yx1f")
 
 [node name="KeysMenu" type="Control" parent="."]
 process_mode = 3
@@ -32,7 +32,7 @@ offset_right = -32025.6
 offset_bottom = -9682.6
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_kf5q8")
+texture = ExtResource("2_bya1w")
 expand_mode = 5
 
 [node name="ItemList" type="ItemList" parent="KeysMenu"]
@@ -84,7 +84,7 @@ text = "Appuie sur une touche"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BackButton" parent="KeysMenu" instance=ExtResource("3_rc5pc")]
+[node name="BackButton" parent="KeysMenu" instance=ExtResource("3_1iop8")]
 layout_mode = 0
 offset_left = 64.0
 offset_top = 64.0

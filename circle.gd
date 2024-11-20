@@ -3,6 +3,7 @@ extends Area2D
 signal animation_finie
 
 var assigned_key = ""
+var assigned_note = []
 var souris_dessus = false
 
 
@@ -42,12 +43,15 @@ func est_souris_dessus():
 						
 func current_key():
 	return assigned_key
+	
+func set_note(note):
+	assigned_note = note
 
-func jouer_animation():
+func consume_circle():
 	$CollisionShape2D.disabled
 	var tween = create_tween()
 	tween.tween_property(self, "scale", Vector2(1.16, 1.16), 0.08)
-	tween.tween_property(self, "scale", Vector2(0, 0), 0.08)
+	tween.tween_property(self, "scale", Vector2(0, 0), 0.48)
 	tween.tween_property($KeyLabel, "modulate:a", 0, 0.08)
 	tween.tween_callback(animation_terminee)
 

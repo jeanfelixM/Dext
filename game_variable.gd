@@ -4,19 +4,25 @@ var key_list: Array = ['A','Z','E','R','F','Q']
 var duration = 30
 var game_mode = 'simple'
 var username = "pigeon"
+var level_id = -1
 var mode = 0
 var rayon = 50
+var notes_list: Array = []
 const tuturu_sound = preload("res://audio/tuturu.wav")
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	load_keys()
-	if key_list.is_empty():
-		key_list = ['A','Z','E','R','F','Q']
-	load_duration()
 	load_user()
+	load_duration()
 	load_mode()
+	load_notes()
+	var file = FileAccess.open("user://sc_lvl_1.json", FileAccess.ModeFlags.READ)
+	if file:
+		print("on a trouvé score lvl id 1")
+	else:
+		print("pas encore")
 
 func key_listappend(s):
 	key_list.append(s)
@@ -38,6 +44,8 @@ func load_keys():
 		key_list = JSON.parse_string(content)
 	else:
 		key_list = []
+	if key_list.is_empty():
+		key_list = ['A','Z','E','R','F','Q']
 		
 func save_keys():
 	var file = FileAccess.open("user://keys.json", FileAccess.ModeFlags.WRITE)
@@ -45,6 +53,19 @@ func save_keys():
 		var content = JSON.stringify(key_list)
 		file.store_string(content)
 		file.close()
+
+func load_notes():
+	var file_path = "res://data/notes.json"
+	if FileAccess.file_exists(file_path):
+		var file = FileAccess.open(file_path, FileAccess.ModeFlags.READ)
+		if file:
+			var content = file.get_as_text()
+			file.close()
+			notes_list = JSON.parse_string(content)
+		else:
+			print("Impossible d'ouvrir le fichier notes.json")
+	else:
+		print("Le fichier notes.json n'existe pas")
 
 func load_duration():
 	var file = FileAccess.open("user://duration.json", FileAccess.ModeFlags.READ)
@@ -107,4 +128,3 @@ func usernamechange(str):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
-

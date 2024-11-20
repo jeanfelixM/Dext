@@ -1,16 +1,16 @@
 [gd_scene load_steps=5 format=3 uid="uid://kh8h3tgcfiy7"]
 
-[ext_resource type="Script" path="res://main_menu.gd" id="1_mr77d"]
-[ext_resource type="Texture2D" uid="uid://bow82ab2jpkv8" path="res://images/mayuri.jpg" id="2_6si30"]
-[ext_resource type="Texture2D" uid="uid://b13p3hoo7c0qr" path="res://images/param.png" id="2_lsv0q"]
-[ext_resource type="AudioStream" uid="uid://cr1ckfehltxe2" path="res://audio/tuturu.wav" id="4_tno7s"]
+[ext_resource type="Script" path="res://main_menu.gd" id="1_trvaf"]
+[ext_resource type="Texture2D" uid="uid://cut2vx48a8ebb" path="res://images/mayuri.jpg" id="2_mft4k"]
+[ext_resource type="Texture2D" uid="uid://fpamc68ox6kk" path="res://images/param.png" id="3_6jd0f"]
+[ext_resource type="AudioStream" uid="uid://cykauti5tqg0m" path="res://audio/tuturu.wav" id="4_uwptn"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = ExtResource("1_mr77d")
+script = ExtResource("1_trvaf")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
@@ -20,7 +20,7 @@ anchor_bottom = 16.2
 offset_bottom = 167.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_6si30")
+texture = ExtResource("2_mft4k")
 expand_mode = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -35,13 +35,18 @@ offset_bottom = -68.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="CampagneButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Campagne"
+alignment = 0
+
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="PlayButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Jouer
+text = "Train
 "
 alignment = 0
 
@@ -49,7 +54,7 @@ alignment = 0
 clip_contents = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-icon = ExtResource("2_lsv0q")
+icon = ExtResource("3_6jd0f")
 icon_alignment = 1
 expand_icon = true
 
@@ -64,7 +69,7 @@ text = "Quitter"
 alignment = 0
 
 [node name="tuturu" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("4_tno7s")
+stream = ExtResource("4_uwptn")
 attenuation = 1e-05
 
 [node name="username" type="LineEdit" parent="."]
@@ -74,6 +79,7 @@ offset_top = 232.0
 offset_right = 664.0
 offset_bottom = 263.0
 
+[connection signal="pressed" from="VBoxContainer/CampagneButton" to="." method="_on_campagne_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/Leaderboard" to="." method="_on_leaderboard_pressed"]
