@@ -5,6 +5,7 @@ var duration = 30
 var game_mode = 'simple'
 var username = "pigeon"
 var level_id = -1
+var level : Level
 var mode = 0
 var rayon = 50
 var notes_list: Array = []
@@ -18,9 +19,9 @@ func _ready():
 	load_duration()
 	load_mode()
 	load_notes()
-	var file = FileAccess.open("user://sc_lvl_1.json", FileAccess.ModeFlags.READ)
+	var file = FileAccess.open("user://sc_lvl_258874712.json", FileAccess.ModeFlags.READ)
 	if file:
-		print("on a trouvé score lvl id 1")
+		print("on a trouvé score lvl id 258874712")
 	else:
 		print("pas encore")
 

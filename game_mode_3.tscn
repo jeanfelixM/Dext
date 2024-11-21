@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://brni4ff6imjte"]
+
+[ext_resource type="Script" path="res://gamemodes/game_mode_3.gd" id="1_6f0dr"]
+[ext_resource type="AudioStream" uid="uid://jybvxuih6qct" path="res://audio/yay.wav" id="2_rs1ss"]
+
+[node name="GameMode3" type="Node2D"]
+script = ExtResource("1_6f0dr")
+
+[node name="YaySound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_rs1ss")
+
+[node name="label_win" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 392.0
+offset_top = 232.0
+offset_right = 720.0
+offset_bottom = 348.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+horizontal_alignment = 1
+vertical_alignment = 1

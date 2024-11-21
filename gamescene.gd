@@ -1,8 +1,8 @@
+class_name GameScene
 extends Node2D
 
 signal took_damage
-signal lost
-signal won
+
 
 var score = 0
 var temps_restant = 30  # Durée du jeu en secondes
@@ -18,19 +18,38 @@ var circle_count = 0
 var duree_tot
 var stars = 0
 var win = false
+var reaction_time = 100
 var pos
 var scores = []
 var cercles= []
 var positions = [Vector2(0,0)]
+var gm: GameMode = null
 
+func _ready():
+	touches_possibles = GameVariable.key_list
+	charger_scores()
+	demarrer_jeu(GameVariable.duration)
+
+func get_gamemode():
+	print("gm est" + str(GameVariable.mode))
+	var gmd
+	gmd = load("res://game_mode_%d.tscn"%GameVariable.mode)
+	gmd = gmd.instantiate()
+	add_child(gmd)
+	return gmd
 
 func demarrer_jeu(duration):
 	$BackgroundMusic.play()
 	zerod_vars()
 	mettre_a_jour_score()
+	gm = get_gamemode()
+	gm.lost.connect(_on_lost)
+	gm.won.connect(_on_win)
+	
 	if GameVariable.mode == 2 || GameVariable.mode == 3:
 		$LabelHealth.visible = true
 		$LabelHealth.text = "Vie: 3"
+	
 	if not GameVariable.mode == 2:
 		duree_tot = duration
 		temps_restant = duree_tot
@@ -43,7 +62,8 @@ func demarrer_jeu(duration):
 		timer.start()
 		
 	generer_nouveau_cercle()
-	circle_count += 1
+	circle_count -= 1
+	
 
 func zerod_vars():
 	start_time = 0.0
@@ -84,6 +104,7 @@ func generer_nouveau_cercle():
 	cercles.append(cercle)
 	
 	start_time = Time.get_ticks_msec()
+	circle_count += 1
 
 func get_note(count):
 	if GameVariable.notes_list.size() > 0:
@@ -92,36 +113,12 @@ func get_note(count):
 		return "C4"
 
 func get_key(count, touches_possibles):
-	var key
-	if GameVariable.mode == 1:
-		print("alternate")
-		if count%3 == 0:
-			key = touches_possibles[randi() % touches_possibles.size()]
-		elif count%3 == 1:
-			key = 'Q'
-		elif count%3 == 2:
-			key = 1
-		print(count%3)
-		return key
-	else:
-		print("simple")
-		return touches_possibles[randi() % touches_possibles.size()]
+	return gm.get_key(count,touches_possibles)
 			
 func get_c_position(count,prevx,prevy):
-	var positionc
 	var viewport_size = get_viewport_rect().size
 	var rayon = GameVariable.rayon
-	if GameVariable.mode == 1:
-		if count%3 == 1:
-			positionc = Vector2(prevx,prevy)
-		else:
-			var position_x = randf_range(rayon, viewport_size.x - rayon)
-			var position_y = randf_range(rayon, viewport_size.y - rayon)
-			positionc = Vector2(position_x, position_y)
-	else:
-		var position_x = randf_range(rayon, viewport_size.x - rayon)
-		var position_y = randf_range(rayon, viewport_size.y - rayon)
-		positionc = Vector2(position_x, position_y)
+	var positionc = gm.get_c_position(count,prevx,prevy, viewport_size.x,viewport_size.y,rayon)
 	return positionc
 
 func charger_scores():
@@ -131,20 +128,7 @@ func charger_scores():
 		file.close()
 		scores = JSON.parse_string(content)
 	else:
-		# Si le fichier n'existe pas, initialiser une liste vide
 		scores = []
-
-
-func _ready():
-	# Initialisation des touches possibles (A à Z)
-	touches_possibles = GameVariable.key_list
-	$FlashTexture.visible = false
-	$MissingPing.visible = false
-	# Démarrage du jeu
-	charger_scores()
-	demarrer_jeu(GameVariable.duration)
-
-	
 
 func mettre_a_jour_score():
 	score = rightpress * (float(rightpress) / max(totalpress,1))
@@ -155,7 +139,6 @@ func mettre_a_jour_temps():
 	
 func mettre_a_jour_vie():
 	$LabelHealth.text = "Vie: %d" % health
-
 
 
 func _on_Timer_timeout():
@@ -170,8 +153,7 @@ func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.is_action_pressed("ui_cancel"):
 			handle_pause()
-			return 
-			
+			return 	
 	var keystroke = (event is InputEventKey and event.pressed)
 	var click = (event is InputEventMouseButton and event.pressed)
 	if jeu_en_cours  and (keystroke || click):
@@ -195,7 +177,6 @@ func play_game(keystroke,click,event):
 		touche_presse = touche_presse.to_upper()
 		right_input = (cercles[-1].current_key() is String) and (str(touche_presse) == str(cercles[-1].current_key()))
 		usedF = (cercles[-1].current_key() is String) and (str(touche_presse) == str('F'))
-		
 	elif click:
 		right_input = (not cercles[-1].current_key() is String) and event.button_index == cercles[-1].current_key()
 	if right_input:
@@ -207,7 +188,6 @@ func play_game(keystroke,click,event):
 				rightpress += 1
 				var reaction_time = Time.get_ticks_msec() - start_time
 				reaction_times.append(reaction_time)
-				circle_count += 1
 			else:
 				errors += 1
 				emit_signal("took_damage")
@@ -215,43 +195,30 @@ func play_game(keystroke,click,event):
 		errors += 1
 		emit_signal("took_damage")
 	
+	var condition = false
 	if GameVariable.mode == 3:
-		handle_gm3()
+		condition = circle_count >= GameVariable.notes_list.size() and (not win)
 	if GameVariable.mode == 2:
-		handle_gm2(usedF)
+		condition = usedF
+	
+	var res = gm.handle_gm(condition,health)
+	if not win:
+		win = res
 
 func calculate_stars():
-	return 1
-
-func handle_gm3():
-	if circle_count > GameVariable.notes_list.size():
-		if not win :
-			$YaySound.play()
-			print("gm3 fini !")
-			var tween = create_tween()
-			$label_win.text = "C'est gagné ! Continue jusqu'à la fin pour augmenter ton score"
-			tween.tween_property($label_win, "modulate:a", 0, 5)
-			stars = calculate_stars()
-		win = true
-	if health <= 0:
-		emit_signal("lost")
-		
-
-func handle_gm2(usedF):
-	if usedF:
-		$FlashSound.play()
-		var tween = create_tween()
-		var mouse_pos = get_local_mouse_position()
-		$FlashTexture.position = mouse_pos
-		$FlashTexture.visible = true
-		tween.tween_property($FlashTexture, "scale", Vector2(1.1, 1.1), 0.08)
-		tween.tween_property($FlashTexture, "scale", Vector2(0, 0), 0.08)
-	if health <= 0:
-		emit_signal("lost")
+	var a = GameVariable.level.reaction_time
+	if reaction_time <= 0.7*GameVariable.level.reaction_time:
+		return 3
+	if reaction_time <= 0.9*GameVariable.level.reaction_time:
+		return 2
+	if reaction_time <= GameVariable.level.reaction_time:
+		return 1
+	else : 
+		return 0
 
 func fin_du_jeu():
 	print("fini jeu")
-	$label_win.text = ""
+	$BackgroundMusic.stop()
 	jeu_en_cours = false
 	if cercles[-1]:
 		cercles[-1].queue_free()
@@ -262,18 +229,18 @@ func fin_du_jeu():
 	average_reaction_time /= reaction_times.size()
 	if GameVariable.mode == 2:
 		duree_tot = 1
+		gm2troll()
 	scores.append({"skill" :score/duree_tot ,"score": score, "time": duree_tot,"error" : errors,"user":GameVariable.username})
 	scores.sort_custom(_compare_scores)
 	if scores.size() > 10:
 		scores = scores.slice(0, 10)
 	sauvegarder_scores()
 	
-	create_endscreen(score,duree_tot,average_reaction_time,errors)
-
-	$BackgroundMusic.stop()
-	if GameVariable.mode == 2:
-		gm2troll()
-		
+	if GameVariable.mode == 3:
+		reaction_time = duree_tot/circle_count
+		stars = calculate_stars()
+	
+	create_endscreen(score,duree_tot,average_reaction_time,errors)	
 	TuturuPlayer.stop_tuturu()
 	
 
@@ -321,6 +288,7 @@ func _on_ReplayButton_pressed():
 	else:
 		duration = $EndScreen/SpinTime.value
 	$EndScreen/HBoxContainer.visible = false
+	$EndScreen.clear_stars()
 	$EndScreen.visible = false
 	demarrer_jeu(duration)
 
@@ -355,3 +323,6 @@ func _on_took_damage() -> void:
 
 func _on_lost() -> void:
 	fin_du_jeu()
+	
+func _on_win() -> void:
+	pass

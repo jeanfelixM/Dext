@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+
 
 public partial class AudioNotePlayer : Node
 {
@@ -8,6 +10,10 @@ public partial class AudioNotePlayer : Node
 	private AudioStreamGenerator audioStream;
 	private AudioStreamGeneratorPlayback playback;
 	private float sampleRate = 44100f;
+	private List<AudioStreamPlayer> activePlayers = new List<AudioStreamPlayer>();  //file fifo pour gérer les supperposition et supprimer les players ...
+
+	private AudioStream sample;
+	private float sampleBaseFrequency = 440f;
 
 	public override void _Ready()
 	{
@@ -23,7 +29,85 @@ public partial class AudioNotePlayer : Node
 		audioPlayer.Play();
 
 		playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
+
+
+		sample = ResourceLoader.Load<AudioStream>("res://audio/tuturu.wav");
+		if (sample == null)
+		{
+			GD.PrintErr("Échec du chargement du sample");
+		}
+
 	}
+
+	public void jouer_note_sample(float frequency, float duree)
+	{
+		if (sample == null)
+		{
+			GD.PrintErr("Sample non chargé");
+			return;
+		}
+
+		// Créer un nouveau AudioStreamPlayer
+		AudioStreamPlayer samplePlayer = new AudioStreamPlayer();
+		AddChild(samplePlayer);
+
+		samplePlayer.Stream = sample;
+
+		// Calculer le pitch_scale
+		float pitchScale = frequency / sampleBaseFrequency;
+		samplePlayer.PitchScale = pitchScale;
+
+		samplePlayer.Play();
+	}
+
+	// Fonction pour jouer un accord avec le sample
+	public void jouer_accord_sample(string[] notes)
+	{
+		if (sample == null)
+		{
+			GD.PrintErr("Sample non chargé");
+			return;
+		}
+
+		foreach (string noteName in notes)
+		{
+			
+			float frequency = NoteToFrequency(noteName);
+			GD.Print($"Note PRRRR correspond à la fréquence : {frequency} Hz");
+			if (frequency > 0f)
+			{
+				// Créer un nouveau AudioStreamPlayer pour chaque note
+				AudioStreamPlayer samplePlayer = new AudioStreamPlayer();
+				AddChild(samplePlayer);
+
+				samplePlayer.Stream = sample;
+
+
+				activePlayers.Add(samplePlayer);
+				var timer = new Timer();
+                timer.WaitTime = 8;
+                timer.OneShot = true;
+                AddChild(timer);
+                timer.Timeout += () =>
+                {
+                    OnPlayerFinished();
+                    timer.QueueFree();
+                };
+                timer.Start();
+
+				// Calculer le pitch_scale
+				float pitchScale = frequency / sampleBaseFrequency;
+				samplePlayer.PitchScale = pitchScale;
+
+				samplePlayer.Play();
+			}
+			else
+			{
+				GD.PrintErr($"Note invalide : {noteName}");
+			}
+		}
+	}
+
 
 	public void jouer_note(float frequency)
 	{
@@ -47,6 +131,30 @@ public partial class AudioNotePlayer : Node
 
 	public void jouer_accord(string[] notes, float dureeParNote)
 	{
+		audioPlayer = new AudioStreamPlayer();
+		AddChild(audioPlayer);
+
+		// Configurer l'AudioStreamGenerator
+		audioStream = new AudioStreamGenerator();
+		audioStream.MixRate = sampleRate;
+
+		audioPlayer.Stream = audioStream;
+		audioPlayer.Play();
+
+		playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
+
+		activePlayers.Add(audioPlayer);
+
+		var timer = new Timer();
+                timer.WaitTime = 2*dureeParNote;
+                timer.OneShot = true;
+                AddChild(timer);
+                timer.Timeout += () =>
+                {
+                    OnPlayerFinished();
+                    timer.QueueFree();
+                };
+                timer.Start();
 		float[] freqs = new float[notes.Length];
 		for (int i = 0; i < notes.Length; i++)
 		{
@@ -62,11 +170,11 @@ public partial class AudioNotePlayer : Node
 				freqs[i] = 0f;
 			}
 		}
-        GenerateChords(freqs, dureeParNote);
+		GenerateChords(freqs, dureeParNote);
 
-    }
+	}
 
-        public void jouer_note_int(int note, float duree)
+		public void jouer_note_int(int note, float duree)
 	{
 		float frequency = GetFrequency(note);
 		if (frequency > 0f)
@@ -80,27 +188,37 @@ public partial class AudioNotePlayer : Node
 		}
 	}
 	
+	private void OnPlayerFinished()
+		{
+			//premier elem de la liste activeplayers, qu'il faut pop
+			var cplayer = activePlayers[0];
+			activePlayers.RemoveAt(0);
+			cplayer.Stop();
+			RemoveChild(cplayer);
+			cplayer.QueueFree();
+		}
+
 	private float NoteToFrequency(string noteName)
 	{
 		// Mapping des notes aux demi-tons par rapport à C
 		var noteOffsets = new System.Collections.Generic.Dictionary<string, int>
 		{
 			{"C", 0},
-			{"C#", 1}, {"Db", 1},
+			{"C#", 1}, {"D-", 1},
 			{"D", 2},
-			{"D#", 3}, {"Eb", 3},
+			{"D#", 3}, {"E-", 3},
 			{"E", 4},
 			{"F", 5},
-			{"F#", 6}, {"Gb", 6},
+			{"F#", 6}, {"G-", 6},
 			{"G", 7},
-			{"G#", 8}, {"Ab", 8},
+			{"G#", 8}, {"A-", 8},
 			{"A", 9},
-			{"A#", 10}, {"Bb", 10},
+			{"A#", 10}, {"B-", 10},
 			{"B", 11}
 		};
 
 		// Expression régulière pour extraire la note et l'octave
-		var regex = new Regex(@"^([A-Ga-g][#b]?)(-?\d+)$");
+		var regex = new Regex(@"^([A-Ga-g][#-]?)(\d+)$");
 		var match = regex.Match(noteName);
 
 		if (match.Success)
@@ -124,23 +242,24 @@ public partial class AudioNotePlayer : Node
 	}
 
 	private float GetFrequency(int n) {
-		double frequency = 440.0 * Math.Pow(2, ((n - 49) / 12.0) - 2);
+		double frequency = 440.0 * Math.Pow(2, ((n - 49) / 12.0) -1);
 		return (float)frequency;
 	}
 
 	private void GenerateTone(float frequency, float duration)
 	{
-        audioPlayer.Stop();
-        audioPlayer.Play();
+		//audioPlayer.Stop();
+		audioPlayer.Play();
+
 		playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
-        int numSamples = (int)(sampleRate * duration);
+		int numSamples = (int)(sampleRate * duration);
 		float increment = frequency / sampleRate;
 		float phase = 0f;
 
-        float time = 0f;
-        float deltaTime = 1f / sampleRate;
+		float time = 0f;
+		float deltaTime = 1f / sampleRate;
 
-        for (int i = 0; i < numSamples; i++)
+		for (int i = 0; i < numSamples; i++)
 		{
 			float sample = GenerateHarmonicSample(phase, time);
 			playback.PushFrame(new Vector2(sample, sample));
@@ -149,126 +268,126 @@ public partial class AudioNotePlayer : Node
 			if (phase >= 1f)
 				phase -= 1f;
 
-            time += deltaTime;
-           
-        }
+			time += deltaTime;
+		   
+		}
 	}
 
-    private void GenerateChords(float[] freqs, float duration)
-    {
-        audioPlayer.Stop();
-        audioPlayer.Play();
+	private void GenerateChords(float[] freqs, float duration)
+	{
+		//audioPlayer.Stop();
+		audioPlayer.Play();
 
-        playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
+		playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
 
-        int numSamples = (int)(sampleRate * duration);
+		int numSamples = (int)(sampleRate * duration);
 
-        float[] phases = new float[freqs.Length];
-        float[] increments = new float[freqs.Length];
-        for (int i = 0; i < freqs.Length; i++)
-        {
-            increments[i] = freqs[i] / sampleRate;
-            phases[i] = 0f; 
-        }
+		float[] phases = new float[freqs.Length];
+		float[] increments = new float[freqs.Length];
+		for (int i = 0; i < freqs.Length; i++)
+		{
+			increments[i] = freqs[i] / sampleRate;
+			phases[i] = 0f; 
+		}
 
-        float time = 0f;
-        float deltaTime = 1f / sampleRate;
+		float time = 0f;
+		float deltaTime = 1f / sampleRate;
 
-        for (int i = 0; i < numSamples; i++)
-        {
-            float combinedSample = 0f;
+		for (int i = 0; i < numSamples; i++)
+		{
+			float combinedSample = 0f;
 
-            // Combiner les signaux des différentes fréquences
-            for (int j = 0; j < freqs.Length; j++)
-            {
-                combinedSample += GenerateHarmonicSample(phases[j], time);
+			// Combiner les signaux des différentes fréquences
+			for (int j = 0; j < freqs.Length; j++)
+			{
+				combinedSample += GenerateHarmonicSample(phases[j], time);
 
-                phases[j] += increments[j];
-                if (phases[j] >= 1f)
-                    phases[j] -= 1f;
-            }
+				phases[j] += increments[j];
+				if (phases[j] >= 1f)
+					phases[j] -= 1f;
+			}
 
-            combinedSample /= freqs.Length;
-            playback.PushFrame(new Vector2(combinedSample, combinedSample));
+			combinedSample /= freqs.Length;
+			playback.PushFrame(new Vector2(combinedSample, combinedSample));
 
-            time += deltaTime;
-        }
-    }
-
-
-    private float GetADSRAmplitude(float time, float noteOnTime, float noteOffTime,
-                       float attackTime, float decayTime, float sustainLevel, float releaseTime)
-    {
-        float amplitude = 0f;
-
-        if (time < noteOnTime)
-        {
-            // Avant que la note ne soit déclenchée
-            amplitude = 0f;
-        }
-        else if (time >= noteOnTime && time < noteOnTime + attackTime)
-        {
-            // Phase d'attaque
-            float attackProgress = (time - noteOnTime) / attackTime;
-            amplitude = attackProgress;
-        }
-        else if (time >= noteOnTime + attackTime && time < noteOnTime + attackTime + decayTime)
-        {
-            // Phase de décroissance
-            float decayProgress = (time - (noteOnTime + attackTime)) / decayTime;
-            amplitude = 1f - decayProgress * (1f - sustainLevel);
-        }
-        else if (time >= noteOnTime + attackTime + decayTime && time < noteOffTime)
-        {
-            // Phase de maintien
-            amplitude = sustainLevel;
-        }
-        else if (time >= noteOffTime && time < noteOffTime + releaseTime)
-        {
-            // Phase de relâchement
-            float releaseProgress = (time - noteOffTime) / releaseTime;
-            amplitude = sustainLevel * (1f - releaseProgress);
-            
-        }
-        else
-        {
-            //GD.PrintErr($"time : {time}");
-            // Après la phase de relâchement
-            amplitude = 0f;
-        }
-        
-        return Mathf.Clamp(amplitude, 0f, 1f);
-    }
+			time += deltaTime;
+		}
+	}
 
 
-    private float GenerateHarmonicSample(float phase, float time)
-    {
-        // Paramètres de l'enveloppe ADSR
-        float attackTime = 0.1f;     
-        float decayTime = 0.1f;      
-        float sustainLevel = 0.5f;   
-        float releaseTime = 0.1f;    
+	private float GetADSRAmplitude(float time, float noteOnTime, float noteOffTime,
+					   float attackTime, float decayTime, float sustainLevel, float releaseTime)
+	{
+		float amplitude = 0f;
 
-        // Temps de la note
-        float noteOnTime = 0.01f;       // La note commence à t = 0
-        float noteOffTime = 0.6f;      // La note est relâchée à t = 1s
+		if (time < noteOnTime)
+		{
+			// Avant que la note ne soit déclenchée
+			amplitude = 0f;
+		}
+		else if (time >= noteOnTime && time < noteOnTime + attackTime)
+		{
+			// Phase d'attaque
+			float attackProgress = (time - noteOnTime) / attackTime;
+			amplitude = attackProgress;
+		}
+		else if (time >= noteOnTime + attackTime && time < noteOnTime + attackTime + decayTime)
+		{
+			// Phase de décroissance
+			float decayProgress = (time - (noteOnTime + attackTime)) / decayTime;
+			amplitude = 1f - decayProgress * (1f - sustainLevel);
+		}
+		else if (time >= noteOnTime + attackTime + decayTime && time < noteOffTime)
+		{
+			// Phase de maintien
+			amplitude = sustainLevel;
+		}
+		else if (time >= noteOffTime && time < noteOffTime + releaseTime)
+		{
+			// Phase de relâchement
+			float releaseProgress = (time - noteOffTime) / releaseTime;
+			amplitude = sustainLevel * (1f - releaseProgress);
+			
+		}
+		else
+		{
+			//GD.PrintErr($"time : {time}");
+			// Après la phase de relâchement
+			amplitude = 0f;
+		}
+		
+		return Mathf.Clamp(amplitude, 0f, 1f);
+	}
 
-        // Calcul de l'enveloppe ADSR
-        float envelope = GetADSRAmplitude(time, noteOnTime, noteOffTime, attackTime, decayTime, sustainLevel, releaseTime);
 
-        // Génération du signal avec les harmoniques
-        float sample = 0f;
-        int numHarmonics = 10; // Nombre d'harmoniques à inclure
-        float decayFactor = 0.4f;
+	private float GenerateHarmonicSample(float phase, float time)
+	{
+		// Paramètres de l'enveloppe ADSR
+		float attackTime = 0.1f;     
+		float decayTime = 0.1f;      
+		float sustainLevel = 0.5f;   
+		float releaseTime = 0.1f;    
 
-        for (int n = 1; n <= numHarmonics; n++)
-        {
-            float amplitude = Mathf.Pow(decayFactor, n - 1) / (n *n);
-            sample += amplitude * Mathf.Sin(2f * Mathf.Pi * n *phase);
-        }
+		// Temps de la note
+		float noteOnTime = 0.01f;       // La note commence à t = 0
+		float noteOffTime = 0.6f;      // La note est relâchée à t = 1s
 
-        sample *= 0.5f*envelope;
-        return sample;
-    }
+		// Calcul de l'enveloppe ADSR
+		float envelope = GetADSRAmplitude(time, noteOnTime, noteOffTime, attackTime, decayTime, sustainLevel, releaseTime);
+
+		// Génération du signal avec les harmoniques
+		float sample = 0f;
+		int numHarmonics = 10; // Nombre d'harmoniques à inclure
+		float decayFactor = 0.4f;
+
+		for (int n = 1; n <= numHarmonics; n++)
+		{
+			float amplitude = Mathf.Pow(decayFactor, n - 1) / (n *n);
+			sample += amplitude * Mathf.Sin(2f * Mathf.Pi * n *phase);
+		}
+
+		sample *= 0.5f*envelope;
+		return sample;
+	}
 
 }

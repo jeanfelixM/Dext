@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://o4mvm50lota6"]
+
+[ext_resource type="Script" path="res://gamemodes/game_mode_1.gd" id="1_yrtg6"]
+
+[node name="GameMode1" type="Node2D"]
+script = ExtResource("1_yrtg6")
