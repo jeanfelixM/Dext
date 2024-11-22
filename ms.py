@@ -70,7 +70,7 @@ def create_level_dataf(file_path, output_file,duration, level_id, name, rayon, m
 def create_level_data(file_path, output_file,duration):
     return create_level_dataf(file_path, output_file,duration, None, None, None, None, None)
 
-midi_file = "amogus.mid"
-notes_array = create_level_data(midi_file, "level_data6.json", 80)
+midi_file = "dadidoo.mid"
+notes_array = create_level_data(midi_file, "level_data7.json", 80)
 #print(notes_array)
 

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://0fcg0lgftf8q"]
+
+[ext_resource type="Script" path="res://scenes/obstacle.gd" id="1_jrg2x"]
+
+[node name="Obstacle" type="StaticBody2D" groups=["Obstacles"]]
+position = Vector2(8, 0)
+collision_layer = 2
+script = ExtResource("1_jrg2x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]

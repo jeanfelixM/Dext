@@ -136,6 +136,7 @@ public partial class AudioNotePlayer : Node
 
 		// Configurer l'AudioStreamGenerator
 		audioStream = new AudioStreamGenerator();
+		audioStream.BufferLength = 0.8f;
 		audioStream.MixRate = sampleRate;
 
 		audioPlayer.Stream = audioStream;
@@ -146,7 +147,7 @@ public partial class AudioNotePlayer : Node
 		activePlayers.Add(audioPlayer);
 
 		var timer = new Timer();
-                timer.WaitTime = 2*dureeParNote;
+                timer.WaitTime = 1.1*dureeParNote;
                 timer.OneShot = true;
                 AddChild(timer);
                 timer.Timeout += () =>
@@ -170,6 +171,7 @@ public partial class AudioNotePlayer : Node
 				freqs[i] = 0f;
 			}
 		}
+		GD.Print(dureeParNote);
 		GenerateChords(freqs, dureeParNote);
 
 	}
@@ -279,6 +281,7 @@ public partial class AudioNotePlayer : Node
 		audioPlayer.Play();
 
 		playback = audioPlayer.GetStreamPlayback() as AudioStreamGeneratorPlayback;
+		//change buffer size
 
 		int numSamples = (int)(sampleRate * duration);
 
@@ -322,37 +325,30 @@ public partial class AudioNotePlayer : Node
 
 		if (time < noteOnTime)
 		{
-			// Avant que la note ne soit déclenchée
 			amplitude = 0f;
 		}
 		else if (time >= noteOnTime && time < noteOnTime + attackTime)
 		{
-			// Phase d'attaque
 			float attackProgress = (time - noteOnTime) / attackTime;
 			amplitude = attackProgress;
 		}
 		else if (time >= noteOnTime + attackTime && time < noteOnTime + attackTime + decayTime)
 		{
-			// Phase de décroissance
 			float decayProgress = (time - (noteOnTime + attackTime)) / decayTime;
 			amplitude = 1f - decayProgress * (1f - sustainLevel);
 		}
 		else if (time >= noteOnTime + attackTime + decayTime && time < noteOffTime)
 		{
-			// Phase de maintien
 			amplitude = sustainLevel;
 		}
 		else if (time >= noteOffTime && time < noteOffTime + releaseTime)
 		{
-			// Phase de relâchement
 			float releaseProgress = (time - noteOffTime) / releaseTime;
 			amplitude = sustainLevel * (1f - releaseProgress);
-			
+	
 		}
-		else
-		{
-			//GD.PrintErr($"time : {time}");
-			// Après la phase de relâchement
+
+		else {
 			amplitude = 0f;
 		}
 		
@@ -360,34 +356,37 @@ public partial class AudioNotePlayer : Node
 	}
 
 
+	
 	private float GenerateHarmonicSample(float phase, float time)
 	{
-		// Paramètres de l'enveloppe ADSR
-		float attackTime = 0.1f;     
-		float decayTime = 0.1f;      
-		float sustainLevel = 0.5f;   
-		float releaseTime = 0.1f;    
+		float attackTime = 0.1f;        // 100 ms pour une montée progressive
+		float decayTime = 0.2f;         // 200 ms pour réduire vers le niveau de maintien
+		float sustainLevel = 0.7f;      // Niveau de maintien à 70% du volume maximum
+		float releaseTime = 0.3f;       // 300 ms pour une libération progressive
 
 		// Temps de la note
-		float noteOnTime = 0.01f;       // La note commence à t = 0
-		float noteOffTime = 0.6f;      // La note est relâchée à t = 1s
-
+		float noteOnTime = 0f;          // La note commence immédiatement
+		float noteOffTime = 1.0f;       // La note est relâchée après 1,0 seconde
 		// Calcul de l'enveloppe ADSR
 		float envelope = GetADSRAmplitude(time, noteOnTime, noteOffTime, attackTime, decayTime, sustainLevel, releaseTime);
 
 		// Génération du signal avec les harmoniques
-		float sample = 0f;
+		float sinesample = 0f;
 		int numHarmonics = 10; // Nombre d'harmoniques à inclure
 		float decayFactor = 0.4f;
-
+		float sawtoothSample = 0f;
+    	int numSawtoothHarmonics = 10;
 		for (int n = 1; n <= numHarmonics; n++)
 		{
-			float amplitude = Mathf.Pow(decayFactor, n - 1) / (n *n);
-			sample += amplitude * Mathf.Sin(2f * Mathf.Pi * n *phase);
-		}
+			float amplitude1 = Mathf.Pow(decayFactor, n - 1) / (n *n);
+			sinesample += amplitude1 * Mathf.Sin(2f * Mathf.Pi * n *phase);
+			float amplitude2 = 1f / n; // Amplitude décroissante pour chaque harmonique
+        	sawtoothSample += Mathf.Pow(-1, n + 1) * amplitude2 * Mathf.Sin(2f * Mathf.Pi * n * phase);
+    	}
+		
 
-		sample *= 0.5f*envelope;
-		return sample;
+		float mixedSample = 0.5f*(0.8f * sinesample + 0.2f * sawtoothSample) * envelope; // Pondération des contributions
+    	return mixedSample;
 	}
 
 }

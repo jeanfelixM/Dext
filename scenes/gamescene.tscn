@@ -1,12 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://dtm7fwy4yiox7"]
+[gd_scene load_steps=14 format=3 uid="uid://dtm7fwy4yiox7"]
 
 [ext_resource type="Script" path="res://gamescene.gd" id="1_eoogk"]
 [ext_resource type="AudioStream" uid="uid://chrf0qb2g3on5" path="res://audio/miaw miaw miaw song sad (lyrics video visual).wav" id="2_n2eh6"]
 [ext_resource type="AudioStream" uid="uid://d1yq7s5o78327" path="res://audio/ping_missing.wav" id="3_x7mpx"]
 [ext_resource type="PackedScene" uid="uid://dtx75dqoxfqd8" path="res://scenes/pause_menu_layer.tscn" id="4_s0m6d"]
 [ext_resource type="Texture2D" uid="uid://ir8m7vit0ocm" path="res://images/missing.png" id="6_txeak"]
+[ext_resource type="PackedScene" uid="uid://b5tl78jth66ap" path="res://soul.tscn" id="8_23gwx"]
 [ext_resource type="PackedScene" uid="uid://idtrrekydecf" path="res://audio_note_player.tscn" id="8_b7om4"]
+[ext_resource type="PackedScene" uid="uid://c5ehxj1btephn" path="res://scenes/subject.tscn" id="9_jninh"]
 [ext_resource type="PackedScene" uid="uid://tvatja6cgjhx" path="res://scenes/end_screen.tscn" id="10_6kbll"]
+[ext_resource type="PackedScene" uid="uid://0fcg0lgftf8q" path="res://scenes/obstacle.tscn" id="10_nfd5t"]
 
 [sub_resource type="Gradient" id="Gradient_rk1t7"]
 interpolation_mode = 2
@@ -15,6 +18,9 @@ colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_xjc46"]
 gradient = SubResource("Gradient_rk1t7")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bmmmq"]
+size = Vector2(1048, 104)
 
 [node name="GameScene" type="Node2D"]
 script = ExtResource("1_eoogk")
@@ -78,10 +84,24 @@ texture = ExtResource("6_txeak")
 [node name="AudioNotePlayer" parent="." instance=ExtResource("8_b7om4")]
 
 [node name="fps" type="Label" parent="."]
-offset_left = 184.0
-offset_top = -184.0
-offset_right = 584.0
+offset_left = 232.0
+offset_top = 200.0
+offset_right = 632.0
+offset_bottom = 384.0
 
+[node name="Soul" parent="." instance=ExtResource("8_23gwx")]
+
+[node name="Subject" parent="." instance=ExtResource("9_jninh")]
+z_index = 5
+position = Vector2(1064, 568)
+
+[node name="Obstacle" parent="." instance=ExtResource("10_nfd5t")]
+
+[node name="CollisionShape2D" parent="Obstacle" index="0"]
+position = Vector2(540, 268)
+shape = SubResource("RectangleShape2D_bmmmq")
+
+[connection signal="colided" from="." to="." method="_on_colided"]
 [connection signal="took_damage" from="." to="." method="_on_took_damage"]
 [connection signal="pressed" from="PauseMenuLayer/PauseMenu/ButtonContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseMenuLayer/PauseMenu/ButtonContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
@@ -89,3 +109,4 @@ offset_right = 584.0
 [connection signal="pressed" from="PauseMenuLayer/PauseMenu/ButtonContainer/QuitButton" to="." method="_on_quit_button_pressed"]
 
 [editable path="PauseMenuLayer"]
+[editable path="Obstacle"]

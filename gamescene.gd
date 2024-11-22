@@ -2,7 +2,7 @@ class_name GameScene
 extends Node2D
 
 signal took_damage
-
+signal colided
 
 var score = 0
 var temps_restant = 30  # Durée du jeu en secondes
@@ -86,6 +86,7 @@ func _process(_delta):
 	$fps.text = "FPS: " + str(fps)
 
 func generer_nouveau_cercle():
+	
 	var cercle_scene = load("res://scenes/Circle.tscn")
 	var cercle = cercle_scene.instantiate()
 	var prevpos = positions[-1]
@@ -169,6 +170,8 @@ func handle_pause():
 		show_pause_menu()
 		
 func play_game(keystroke,click,event):
+	print("REACTION")
+	
 	var right_input
 	totalpress += 1
 	var usedF = false
@@ -326,3 +329,7 @@ func _on_lost() -> void:
 	
 func _on_win() -> void:
 	pass
+
+
+func _on_colided() -> void:
+	pass # Replace with function body.

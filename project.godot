@@ -29,6 +29,10 @@ window/stretch/mode="canvas_items"
 
 project/assembly_name="Dext"
 
+[global_group]
+
+Obstacles=""
+
 [input]
 
 DKey={

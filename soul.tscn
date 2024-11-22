@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://b5tl78jth66ap"]
+
+[ext_resource type="Script" path="res://cursor_node.gd" id="1_mnvn0"]
+[ext_resource type="Texture2D" uid="uid://ciul0yyxqcexg" path="res://images/soul2.bmp" id="2_386ih"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gycd2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_386ih")
+}],
+"loop": true,
+"name": &"soul",
+"speed": 5.0
+}]
+
+[node name="Soul" type="CanvasLayer"]
+layer = 10
+
+[node name="CursorNode" type="Node2D" parent="."]
+process_mode = 3
+script = ExtResource("1_mnvn0")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CursorNode"]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_gycd2")
+animation = &"soul"
